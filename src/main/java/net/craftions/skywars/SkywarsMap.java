@@ -1,12 +1,16 @@
 package net.craftions.skywars;
 
-public class SkywarsMap {
+import org.bukkit.Location;
+
+public abstract class SkywarsMap {
 
     private final int teams, teamSize;
+    private final Location respawn;
 
-    public SkywarsMap(int teams, int teamSize) {
+    public SkywarsMap(int teams, int teamSize, Location respawn) {
         this.teams = teams;
         this.teamSize = teamSize;
+        this.respawn = respawn;
     }
 
     public final int getTeams() {
@@ -16,4 +20,10 @@ public class SkywarsMap {
     public final int getTeamSize() {
         return this.teamSize;
     }
+
+    public final Location getRespawnLocation() {
+        return this.respawn;
+    }
+
+    public abstract Location getSpawnLocation(int team);
 }
