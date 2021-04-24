@@ -11,6 +11,7 @@ public final class Skywars extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.saveDefaultConfig();
         instance = this;
         this.spawn = this.getConfig().getLocation("lobby.spawn");
     }
