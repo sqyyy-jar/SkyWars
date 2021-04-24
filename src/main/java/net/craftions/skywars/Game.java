@@ -3,6 +3,7 @@ package net.craftions.skywars;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -104,9 +105,16 @@ public class Game {
                             ('&', "&aT" + t + ": " + p.getName()));
                     p.setPlayerListHeader(ChatColor.translateAlternateColorCodes
                             ('&', "&c&lCraftions Skywars&r - &aTeam " + t));
+                    p.teleport(this.map.getSpawnLocation(t));
                 }
             });
         }
         return started;
+    }
+
+    private void fillChests() {
+        for (Block chest : this.map.getChests()) {
+
+        }
     }
 }
