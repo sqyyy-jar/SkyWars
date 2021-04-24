@@ -1,6 +1,8 @@
 package net.craftions.skywars;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -65,6 +67,16 @@ public class Game {
 
     public void removePlayer(Player player) {
         this.players.remove(player);
+    }
+
+    public void kill(Player player) {
+        this.alive.remove(player);
+        player.sendMessage(ChatColor.translateAlternateColorCodes
+                ('&', "&7You died."));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Skywars.getInstance(), () -> {
+            player.setGameMode(GameMode.SPECTATOR);
+            player.teleport(this.map.getRespawnLocation());
+        });
     }
 
     public boolean isAlive(Player player) {
