@@ -22,6 +22,7 @@ public class EventDeath implements Listener {
         }
         if (game.isAlive(p)) {
             game.kill(p);
+
         }
     }
 }
