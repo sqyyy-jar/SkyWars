@@ -1,5 +1,7 @@
 package net.craftions.skywars;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.craftions.skywars.util.ItemBuilder;
 import org.bukkit.*;
 import org.bukkit.block.*;
@@ -48,10 +50,13 @@ public class Game {
         return false;
     }
 
+    public int getPlayers() {
+        return players.size();
+    }
+
     public boolean initPlayer(Player player) {
         if (this.started) return false;
-        if (this.players.size() == this.teamSize * this.teams)
-            return false;
+        if (this.players.size() == this.teamSize * this.teams) return false;
         if (this.players.size() > this.teamSize * this.teams) {
             new Thread(() -> {
                 while (this.players.size() > this.teamSize * this.teams) {
@@ -64,11 +69,23 @@ public class Game {
             return false;
         }
         this.players.add(player);
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes
+                ('&', prefix + "&7A player joined. &8[" + players.size() + "/" + teams * teamSize + "]"));
         return true;
     }
 
     public void removePlayer(Player player) {
         this.players.remove(player);
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF("lobby");
+        player.sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
+    }
+
+    public void disconnect(Player player) {
+        this.players.remove(player);
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes
+                ('&', prefix + "&7A player left. &8[" + players.size() + "/" + teams * teamSize + "]"));
     }
 
     public void kill(Player player) {
