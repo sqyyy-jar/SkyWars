@@ -1,10 +1,11 @@
 package net.craftions.skywars;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.block.Block;
+import net.craftions.skywars.util.ItemBuilder;
+import org.bukkit.*;
+import org.bukkit.block.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -77,6 +78,7 @@ public class Game {
         Bukkit.getScheduler().scheduleSyncDelayedTask(Skywars.getInstance(), () -> {
             player.setGameMode(GameMode.SPECTATOR);
             player.teleport(this.map.getRespawnLocation());
+            var i = 0;
         });
     }
 
@@ -86,6 +88,7 @@ public class Game {
 
     public boolean start() {
         if (isReady()) {
+            new Thread(this::fillChests).start();
             started = true;
             Collections.shuffle(this.players);
             int team = 0;
@@ -113,8 +116,37 @@ public class Game {
     }
 
     private void fillChests() {
+        Random r = new Random();
         for (Block chest : this.map.getChests()) {
-
+            if (!(chest instanceof TileState)) continue;
+            BlockState state = chest.getState();
+            if (!(state instanceof Container)) continue;
+            Container container = (Container) state;
+            Inventory inv = container.getInventory();
+            for (int i = 0; i < inv.getContents().length; i++) {
+                if (r.nextDouble() <= 0.20) {
+                    inv.getContents()[i] = randomItem();
+                }
+            }
         }
+    }
+
+    private final Random rc = new Random();
+
+    private ItemStack randomItem() {
+        int i = rc.nextInt(this.map.getGen().getItemStacks().length);
+        ItemBuilder b = new ItemBuilder(this.map.getGen().getItemStacks()[i].getMaterial(),
+                this.map.getGen().getItemStacks()[i].getAmount());
+        double i1 = rc.nextDouble();
+        if (i1 < 0.5 && this.map.getGen().getItemStacks()[i].getEnchs().length > 0) {
+            b.addEnchant(this.map.getGen().getItemStacks()[i].getEnchs()
+                    [rc.nextInt(this.map.getGen().getItemStacks()[i].getEnchs().length)],
+                    rc.nextInt(1) + 1);
+        }
+        return b.build();
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 }
