@@ -14,7 +14,7 @@ public abstract class SkywarsMap {
     private final ChestGenerator gen;
 
     public SkywarsMap(int teams, int teamSize, Location respawn) {
-        this(teams, teamSize, respawn, ChestGenerator.DEFAULT);
+        this(teams, teamSize, respawn, ChestGenerator.NORMAL);
     }
 
     public SkywarsMap(int teams, int teamSize, Location respawn, ChestGenerator gen) {
@@ -27,6 +27,10 @@ public abstract class SkywarsMap {
 
     public void addChest(Block block) {
         chests.add(block);
+    }
+
+    public ChestGenerator getGen() {
+        return gen;
     }
 
     public final int getTeams() {
