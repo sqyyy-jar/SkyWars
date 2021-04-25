@@ -29,7 +29,7 @@ public class EventBlock implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void on(InventoryClickEvent e) {
+    public void onInvClick(InventoryClickEvent e) {
         if (Skywars.getInstance().getCurrentGame() == null) {
             e.setCancelled(true);
             return;
