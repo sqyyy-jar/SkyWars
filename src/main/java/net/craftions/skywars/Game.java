@@ -138,10 +138,10 @@ public class Game {
         ItemBuilder b = new ItemBuilder(this.map.getGen().getItemStacks()[i].getMaterial(),
                 this.map.getGen().getItemStacks()[i].getAmount());
         double i1 = rc.nextDouble();
+        int i2 = rc.nextInt(this.map.getGen().getItemStacks()[i].getEnchs().length);
         if (i1 < 0.5 && this.map.getGen().getItemStacks()[i].getEnchs().length > 0) {
-            b.addEnchant(this.map.getGen().getItemStacks()[i].getEnchs()
-                    [rc.nextInt(this.map.getGen().getItemStacks()[i].getEnchs().length)],
-                    rc.nextInt(1) + 1);
+            b.addEnchant(this.map.getGen().getItemStacks()[i].getEnchs()[i2].getEnch(),
+                    this.map.getGen().getItemStacks()[i].getEnchs()[i2].getLvl());
         }
         return b.build();
     }
