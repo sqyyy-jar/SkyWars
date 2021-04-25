@@ -1,9 +1,10 @@
 package net.craftions.skywars;
 
 import net.craftions.skywars.util.ChestItem;
+import net.craftions.skywars.util.Ench;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.enchantments.EnchantmentOffer;
 
 public enum ChestGenerator {
     NORMAL(new ChestItem(Material.STONE_SWORD, 1), new ChestItem(Material.STONE, 64),
@@ -42,8 +43,7 @@ public enum ChestGenerator {
             new ChestItem(Material.DIAMOND_HELMET, 1),
             new ChestItem(Material.CHAINMAIL_HELMET, 1, Enchantment.PROTECTION_FIRE),
             new ChestItem(Material.IRON_LEGGINGS, 1),
-            new ChestItem(Material.TNT, 38),
-            new ChestItem(Material.DIAMOND_CHESTPLATE, 1),
+            new ChestItem(Material.TNT, 23),
             new ChestItem(Material.DIAMOND_CHESTPLATE, 1, Enchantment.PROTECTION_ENVIRONMENTAL),
             new ChestItem(Material.DIAMOND_BOOTS, 1),
             new ChestItem(Material.DIAMOND_HELMET, 1),
@@ -51,7 +51,10 @@ public enum ChestGenerator {
             new ChestItem(Material.IRON_AXE, 1),
             new ChestItem(Material.NETHERITE_SWORD, 1),
             new ChestItem(Material.NETHERITE_BOOTS, 1),
-            new ChestItem(Material.ENCHANTED_GOLDEN_APPLE, 1)),
+            new ChestItem(Material.ENCHANTED_GOLDEN_APPLE, 1),
+            new ChestItem(Material.OAK_LOG, 4),
+            new ChestItem(Material.DIAMOND_BLOCK, 3),
+            new ChestItem(Material.STICK, 1, new Ench(Enchantment.KNOCKBACK, 2))),
     EASY(new ChestItem(Material.STONE_SWORD, 1), new ChestItem(Material.STONE, 64),
             new ChestItem(Material.OAK_PLANKS, 32), new ChestItem(Material.IRON_SWORD, 1),
             new ChestItem(Material.CHAINMAIL_LEGGINGS, 1),
@@ -64,11 +67,11 @@ public enum ChestGenerator {
             new ChestItem(Material.LAVA_BUCKET, 1),
             new ChestItem(Material.WATER_BUCKET, 1),
             new ChestItem(Material.COBWEB, 16),
-            new ChestItem(Material.DIAMOND_HELMET, 1),
             new ChestItem(Material.CHAINMAIL_HELMET, 1, Enchantment.PROTECTION_FIRE),
             new ChestItem(Material.IRON_LEGGINGS, 1),
             new ChestItem(Material.TNT, 38));
 
+    //Nix ändern
     private final ChestItem[] itemStacks;
 
     ChestGenerator(ChestItem... itemStacks) {
