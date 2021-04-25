@@ -57,7 +57,7 @@ public class Game {
                 while (this.players.size() > this.teamSize * this.teams) {
                     Player p = this.players.get(this.players.size() - 1);
                     p.sendMessage(ChatColor.translateAlternateColorCodes
-                            ('&', "&cThe game is already full."));
+                            ('&', prefix + "&cThe game is already full."));
                     removePlayer(p);
                 }
             }).start();
@@ -74,7 +74,7 @@ public class Game {
     public void kill(Player player) {
         this.alive.remove(player);
         player.sendMessage(ChatColor.translateAlternateColorCodes
-                ('&', "&7You died."));
+                ('&', prefix + "&7You died."));
         Bukkit.getScheduler().scheduleSyncDelayedTask(Skywars.getInstance(), () -> {
             player.setGameMode(GameMode.SPECTATOR);
             player.teleport(this.map.getRespawnLocation());
