@@ -3,7 +3,8 @@ package net.craftions.skywars.listeners;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.craftions.skywars.Skywars;
-import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -12,22 +13,34 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class EventJoinQuit implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        e.getPlayer().teleport(Skywars.getInstance().getSpawn());
+        Player p = e.getPlayer();
+        p.setGameMode(GameMode.SURVIVAL);
+        p.getInventory().clear();
+        p.teleport(Skywars.getInstance().getSpawn());
         if (Skywars.getInstance().getCurrentGame() == null) {
+            p.sendMessage("§cNo concurrent game!");
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");
             out.writeUTF("lobby");
-            e.getPlayer().sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
+            p.sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
             return;
         }
-        if (Skywars.getInstance().getCurrentGame().isStarted() || Skywars.getInstance().getCurrentGame().isReady()) {
+        if (Skywars.getInstance().getCurrentGame().isStarted()) {
+            p.sendMessage("§cGame has already started!");
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");
             out.writeUTF("lobby");
-            e.getPlayer().sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
+            p.sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
             return;
         }
-        Skywars.getInstance().getCurrentGame().initPlayer(e.getPlayer());
+        boolean b = Skywars.getInstance().getCurrentGame().initPlayer(p);
+        if (!b) {
+            p.sendMessage("§cGame is full!");
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("Connect");
+            out.writeUTF("lobby");
+            p.sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
+        }
     }
 
     @EventHandler
