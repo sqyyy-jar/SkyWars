@@ -7,12 +7,13 @@ import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
 public class Game {
-    private static final String prefix = "&8[&cSkywars&8] &r";
+    public static final String prefix = "&8[&cSkywars&8] &r";
     private final int teams, teamSize;
     private boolean started;
     private SkywarsMap map;
@@ -76,6 +77,12 @@ public class Game {
 
     public void removePlayer(Player player) {
         this.players.remove(player);
+        this.alive.remove(player);
+        if (this.alive.size() == 1) {
+            last(this.alive.get(0));
+        } else if (this.alive.size() < 1) {
+            last(null);
+        }
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Connect");
         out.writeUTF("lobby");
@@ -84,8 +91,19 @@ public class Game {
 
     public void disconnect(Player player) {
         this.players.remove(player);
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes
-                ('&', prefix + "&7A player left. &8[" + players.size() + "/" + teams * teamSize + "]"));
+        if (this.started) {
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes
+                    ('&', prefix + "&7A player left."));
+            this.alive.remove(player);
+            if (this.alive.size() == 1) {
+                last(this.alive.get(0));
+            } else if (this.alive.size() < 1) {
+                last(null);
+            }
+        } else {
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes
+                    ('&', prefix + "&7A player left. &8[" + players.size() + "/" + teams * teamSize + "]"));
+        }
     }
 
     public void kill(Player player) {
@@ -97,6 +115,27 @@ public class Game {
             player.teleport(this.map.getRespawnLocation());
             var i = 0;
         });
+        if (this.alive.size() == 1) {
+            last(player);
+        } else if (this.alive.size() < 1) {
+            last(null);
+        }
+    }
+
+    public void last(Player player) {
+        if (player != null)
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes
+                ('&', prefix + "&7The game has ended. " + player.getName() + " and his team won."));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Skywars.getInstance(), () -> {
+            for (Player p : this.players) {
+                p.sendMessage("§cServer restarting!");
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("Connect");
+                out.writeUTF("lobby");
+                p.sendPluginMessage(Skywars.getInstance(), "BungeeCord", out.toByteArray());
+            }
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Skywars.getInstance(), () -> Skywars.getInstance().getServer().spigot().restart(), 20);
+        }, 100);
     }
 
     public boolean isAlive(Player player) {
@@ -104,8 +143,8 @@ public class Game {
     }
 
     public boolean start() {
-        if (isReady()) {
-            new Thread(this::fillChests).start();
+        if (isReady() || true) {
+            fillChests();
             started = true;
             Collections.shuffle(this.players);
             int team = 0;
@@ -135,14 +174,17 @@ public class Game {
     private void fillChests() {
         Random r = new Random();
         for (Block chest : this.map.getChests()) {
-            if (!(chest instanceof TileState)) continue;
             BlockState state = chest.getState();
-            if (!(state instanceof Container)) continue;
-            Container container = (Container) state;
+            if (!(state instanceof InventoryHolder)) {
+                System.out.println("Chest at " + chest.getLocation() + " is not a Container!");
+                continue;
+            }
+            InventoryHolder container = (InventoryHolder) state;
             Inventory inv = container.getInventory();
+            inv.clear();
             for (int i = 0; i < inv.getContents().length; i++) {
-                if (r.nextDouble() <= 0.20) {
-                    inv.getContents()[i] = randomItem();
+                if (r.nextInt(100) <= 28) {
+                    inv.setItem(i, randomItem());
                 }
             }
         }
@@ -155,15 +197,21 @@ public class Game {
         ItemBuilder b = new ItemBuilder(this.map.getGen().getItemStacks()[i].getMaterial(),
                 this.map.getGen().getItemStacks()[i].getAmount());
         double i1 = rc.nextDouble();
-        int i2 = rc.nextInt(this.map.getGen().getItemStacks()[i].getEnchs().length);
-        if (i1 < 0.5 && this.map.getGen().getItemStacks()[i].getEnchs().length > 0) {
-            b.addEnchant(this.map.getGen().getItemStacks()[i].getEnchs()[i2].getEnch(),
-                    this.map.getGen().getItemStacks()[i].getEnchs()[i2].getLvl());
+        if (this.map.getGen().getItemStacks()[i].getEnchs().length >= 1) {
+            int i2 = rc.nextInt(this.map.getGen().getItemStacks()[i].getEnchs().length);
+            if (i1 < 0.5 && this.map.getGen().getItemStacks()[i].getEnchs().length > 0) {
+                b.addEnchant(this.map.getGen().getItemStacks()[i].getEnchs()[i2].getEnch(),
+                        this.map.getGen().getItemStacks()[i].getEnchs()[i2].getLvl());
+            }
         }
         return b.build();
     }
 
     public boolean isStarted() {
         return started;
+    }
+
+    public SkywarsMap getMap() {
+        return map;
     }
 }
