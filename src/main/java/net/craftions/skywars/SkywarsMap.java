@@ -8,10 +8,11 @@ import java.util.List;
 
 public abstract class SkywarsMap {
 
+    public static final List<SkywarsMap> maps = new ArrayList<>();
     private final int teams, teamSize;
     private final Location respawn;
     private final List<Block> chests;
-    private final ChestGenerator gen;
+    private ChestGenerator gen;
 
     public SkywarsMap(int teams, int teamSize, Location respawn) {
         this(teams, teamSize, respawn, ChestGenerator.NORMAL);
@@ -22,6 +23,10 @@ public abstract class SkywarsMap {
         this.teamSize = teamSize;
         this.respawn = respawn;
         this.chests = new ArrayList<>();
+        this.gen = gen;
+    }
+
+    public void setGen(ChestGenerator gen) {
         this.gen = gen;
     }
 
