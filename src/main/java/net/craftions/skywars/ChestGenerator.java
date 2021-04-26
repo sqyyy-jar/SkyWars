@@ -46,7 +46,6 @@ public enum ChestGenerator {
             new ChestItem(Material.TNT, 23),
             new ChestItem(Material.DIAMOND_CHESTPLATE, 1, Enchantment.PROTECTION_ENVIRONMENTAL),
             new ChestItem(Material.DIAMOND_BOOTS, 1),
-            new ChestItem(Material.DIAMOND_HELMET, 1),
             new ChestItem(Material.DIAMOND_SWORD, 1),
             new ChestItem(Material.IRON_AXE, 1),
             new ChestItem(Material.NETHERITE_SWORD, 1),
